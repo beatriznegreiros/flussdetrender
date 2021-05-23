@@ -25,30 +25,36 @@ iter_thal = thal_df.loc[1:len-2, :]
 # Vector to save the breakpoints of the flvuial system
 break_points = np.array([])
 
-teta = 0
+acc_teta = 0.0
 
 # Loops through thalweg points
 for i, row in enumerate(iter_thal.itertuples()):
     # Find the next two points necessary to calculate the vectors from p_1
-    p_2 = np.array([thal_df.loc[i, 'x'], thal_df.loc[i, 'y']])
-    p_3 = np.array([thal_df.loc[i+1, 'x'], thal_df.loc[i+1, 'y']])
+    p_2 = np.array([thal_df.loc[i+1, 'x'], thal_df.loc[i+1, 'y']])
+    p_3 = np.array([thal_df.loc[i+2, 'x'], thal_df.loc[i+2, 'y']])
 
     # v_i is the vector defined with a tuple (x,y,z)
     v_1 = p_2 - p_1
     v_2 = p_3 - p_1
 
     # Claculate the angle between the two vectors
-    teta = teta + np.degrees(np.arcsin(abs(np.cross(v_1, v_2)) / abs(np.linalg.norm(v_1) * np.linalg.norm(v_2))))
-    print(abs(np.cross(v_1, v_2)))
-    print(abs(np.linalg.norm(v_1) * np.linalg.norm(v_2)))
-    print(teta)
-    if teta > threshold:
+    # print(abs(np.cross(v_1, v_2)))
+    # print(abs(np.linalg.norm(v_1)))
+    # print(abs(np.linalg.norm(v_2)))
+    teta_new = np.degrees(np.arcsin(abs(np.cross(v_1, v_2)) / abs(np.linalg.norm(v_1) * np.linalg.norm(v_2))))
+    acc_teta += teta_new
+
+    if acc_teta > threshold:
         p_1 = p_2
+        acc_teta = 0
+        print('acc_teta: ', acc_teta, 'p_1new: ', p_1)
         np.append(break_points, p_1)
         # break_points.iloc[i+1, :] = pd.Series({'x': thal_df.loc[i, 'x'], 'y': thal_df.loc[i, 'y']})
 
 print(break_points)
 
+
+#TODO - export breakpoints as shape
 
 #columns = ['x', 'y']
 
