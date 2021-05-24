@@ -5,11 +5,11 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 # Definiion of threshold to clip the raster
-threshold = 20
+threshold = 30
 crs = 'EPSG:25832'
 
 # Read Thalweg shapefile
-thal_df = geopandas.read_file('C:/Users/beatr/flussdetrender/clip_samples/thalweg_rough_trial.shp')
+thal_df = geopandas.read_file('C:/Users/beatr/DEMTools/thalweg_rough_trial.shp')
 
 # Assigns direct x and y attributed from the derived attributes of the polygon
 thal_df["x"] = thal_df["geometry"].x
@@ -23,7 +23,7 @@ len = len(thal_df)
 iter_thal = thal_df.loc[1:len-2, :]
 
 # Vector to save the breakpoints of the flvuial system
-break_points = np.array([])
+break_points = np.array([0, 0])
 
 acc_teta = 0.0
 
@@ -46,23 +46,16 @@ for i, row in enumerate(iter_thal.itertuples()):
 
     if acc_teta > threshold:
         p_1 = p_2
+        break_points = np.vstack((break_points, p_1))
         acc_teta = 0
-        print('acc_teta: ', acc_teta, 'p_1new: ', p_1)
-        np.append(break_points, p_1)
-        # break_points.iloc[i+1, :] = pd.Series({'x': thal_df.loc[i, 'x'], 'y': thal_df.loc[i, 'y']})
 
-print(break_points)
 
 
 #TODO - export breakpoints as shape
 
-#columns = ['x', 'y']
-
-
-# gdf = geopandas.GeoDataFrame(self.df, geometry=geopandas.points_from_xy(self.df.x, self.df.y))
-#         gdf.crs = self.crs
-
-
-# pd.DataFrame()
-# break_points = break_points.rename(columns = {break_points.columns[0]: 'x', break_points.columns[1]: 'y'})
-# break_points.iloc[0, :] = pd.Series({'x': thal_df.loc[0, 'x'], 'y': thal_df.loc[0, 'y']})
+columns = ['x', 'y']
+indices = np.arange(0, np.shape(break_points)[0]-1, 1)
+break_df = pd.DataFrame(columns=columns, data=break_points[1::], index=indices)
+gdf = geopandas.GeoDataFrame(break_df, geometry=geopandas.points_from_xy(break_df.x, break_df.y))
+gdf.crs = crs
+gdf.to_file(drive='ESRI Shapefile', filename='test_breakpoints_t30_abs.shp')
