@@ -3,7 +3,7 @@
 Author: Renan Vasconcelos
 """
 
-from detrender import *
+from config import *
 
 
 class Shape:

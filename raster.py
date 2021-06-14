@@ -72,11 +72,12 @@ class Raster:
         df[["z"]] = array
         return df
 
-    def burn(self, array):
+    def burn(self, array, numb=0, transf=""):
         """Creates a (.tif) file from a array and saves it with
         the same projection and transform information of the
         instantiated object.
 
+        :param transf:
         :param array: Array nxm of Floats/Int
         :return:None
         """
@@ -84,11 +85,11 @@ class Raster:
             array = np.ma.masked_invalid(array)
             self.driver.Register()
             output_raster = self.driver.Create(
-                str(detrended_raster_path) + str(Path("/detrended_raster_")) + str(self.name.split("_")[-1] + ".tif"),
+                str(detrended_raster_path) + str(Path("/detrended_raster_")) + (str(self.name.split("_")[-1] if detrend_local else "global_" + str(numb)) + ".tif"),
                 xsize=array.shape[1],
                 ysize=array.shape[0],
                 bands=1, eType=gdal.GDT_Float32)
-            output_raster.SetGeoTransform(self.transform)
+            output_raster.SetGeoTransform(self.transform if detrend_local else transf)
             output_raster.SetProjection(self.projection)
             output_raster_band = output_raster.GetRasterBand(1)
 

@@ -93,7 +93,7 @@ class Thalweg(Shape):
         pixel_height = -raster.transform[5]
 
         # Create a list with the coordinates of all pixels.
-        points = thalweg_df[thalweg_df.columns[[5, 6]]].to_records(index=False)
+        points = thalweg_df[["x", "y"]].to_records(index=False)
         points_list = list(points)
         thalweg_new_z_array = np.array([])
 

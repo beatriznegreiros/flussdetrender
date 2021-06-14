@@ -26,8 +26,12 @@ except ImportError:
 # Save address of directories of shape files (Thalweg points),
 # raster files (digital elevation models) of the example
 # and detrended raster(s)
-directory_shape_files = Path(os.path.abspath(os.getcwd()) + "/geodata_example/shapefiles/")
-directory_raster_files = Path(os.path.abspath(os.getcwd()) + "/geodata_example/rasters/")
+# directory_shape_files = Path(os.path.abspath(os.getcwd()) + "/geodata_example/shapefiles/")
+# directory_raster_files = Path(os.path.abspath(os.getcwd()) + "/geodata_example/rasters/")
+
+directory_shape_files = Path(os.path.abspath(os.getcwd()) + "/Thalweg_points/")
+directory_raster_files = Path(os.path.abspath(os.getcwd()) + "/Inn_rasters_2/")
+
 detrended_raster_path = Path("geodata_example/detrended_rasters")
 
 # Define the band fo the raster(s) file(s) to be extracted.
@@ -36,9 +40,15 @@ band_num = 1
 # Limit to be considered detrended
 detrend_limit = 10 ** -2
 
+# Define if the detrend is local (False to global dentred)
+detrend_local = False
+detrend_array_list = []
+mid_z_list = []
+trans_list = []
+
 # Set True to show the plots of the respective elements.
 # plot_detrender = True
-plot_detrender = True
+plot_detrender = False
 
 # Delete log file to avoid errors
 try:

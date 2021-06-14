@@ -22,7 +22,7 @@ ____
     * chronometer: takes track of the run time and print it.
 """
 
-from detrender import *
+from config import *
 
 
 def compute_plane(x, y, normal, point):
@@ -88,8 +88,13 @@ def compute_normal(df):
     y_normal = x_normal * line_coefs_xy[0]
     z_normal = -(1 / plane_vector[2]) * (plane_vector[0] * x_normal + plane_vector[1] * y_normal)
 
+    # build normal to the plain
     plane_normal = np.array([x_normal, y_normal, z_normal])
-    return plane_normal, point_last
+
+    # compute mid_z (mid height of the trend_line)
+    mid_z = (z_first+z_last)/2
+
+    return plane_normal, point_last, mid_z
 
 
 def normalize_plane(band, plane):

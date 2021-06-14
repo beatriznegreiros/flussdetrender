@@ -67,7 +67,7 @@ def find_files(directory=None):
 
 
 @chronometer
-def detrender(raster_add, shapefile_add):
+def detrender(raster_add, shapefile_add, last_item):
     """ It instantiates one object from the class Raster
     and one object from class Thalweg.
     It performs all the necessary computations to create
@@ -92,13 +92,13 @@ def detrender(raster_add, shapefile_add):
                                              thal_points * 100))  # Use magic method __mul__
 
     # Compute a normal vector and a point of the DEM's Trend Plane.
-    plane_normal, plane_point = compute_normal(thal_df)
+    plane_normal, plane_point_last, mid_z = compute_normal(thal_df)
 
     # Compute a dataframe with the x,y and z position of the DEM's Trend Plane.
     plane_df = compute_plane(raster_coord_df["x"],
                              raster_coord_df["y"],
                              plane_normal,
-                             plane_point)
+                             plane_point_last)
 
     # Compute a normalized array for the z values of the Trend Plane.
     plane_normalized = normalize_plane(band_array,
@@ -120,10 +120,23 @@ def detrender(raster_add, shapefile_add):
     thal_points.check_detrend(raster_object=raster)
 
     # Create detrended raster file.
-    raster.burn(detrended_array)
+    if detrend_local:
+        raster.burn(detrended_array+10)
+    else:
+        mid_z_list.append(mid_z)
+        detrend_array_list.append(detrended_array)
+        trans_list.append(raster.transform)
+        if last_item:
+            average_mid_z = np.average(mid_z_list)
+            for k, d_array in enumerate(detrend_array_list):
+                z_diff = average_mid_z - mid_z_list[k]
+                global_array = d_array + z_diff
+                raster.burn(global_array, k+1, trans_list[k])
 
-    # Plot the elements marked as True in config.py
+    # Plot the elements below marked as True in config.py
     plotter(thal_df, plane_df, raster_coord_df, thalweg_new_z_vector, raster.name, thal_points.name)
+
+    return detrended_array, mid_z
 
 
 @log_actions
@@ -133,8 +146,15 @@ def main():
     and uses each combination of them to call the function detrender.
     :return: None
     """
+    last_item = False
+    raster_list = []
     for i, file_raster in enumerate(file_list_raster):
-        detrender(file_raster, file_list_shape[i])
+        if i+1 == file_list_raster.__len__():
+            last_item = True
+        detrender(file_raster, file_list_shape[i], last_item)
+
+
+
 
 
 # Press the green button in the gutter to run the script.
