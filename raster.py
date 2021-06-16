@@ -85,7 +85,7 @@ class Raster:
             array = np.ma.masked_invalid(array)
             self.driver.Register()
             output_raster = self.driver.Create(
-                str(detrended_raster_path) + str(Path("/detrended_raster_")) + (str(self.name.split("_")[-1] if detrend_local else "global_" + str(numb)) + ".tif"),
+                str(detrended_raster_path) + str(Path("/detrended_raster_")) + (str(self.name.split("_")[-1] if detrend_local else "global_see_" + str(numb)) + ".tif"),
                 xsize=array.shape[1],
                 ysize=array.shape[0],
                 bands=1, eType=gdal.GDT_Float32)

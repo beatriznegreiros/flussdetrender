@@ -121,17 +121,23 @@ def detrender(raster_add, shapefile_add, last_item):
 
     # Create detrended raster file.
     if detrend_local:
-        raster.burn(detrended_array+10)
+        raster.burn(detrended_array)
     else:
         mid_z_list.append(mid_z)
         detrend_array_list.append(detrended_array)
         trans_list.append(raster.transform)
+        lowest_pixel_list.append(np.nanmin(detrended_array))
         if last_item:
             average_mid_z = np.average(mid_z_list)
             for k, d_array in enumerate(detrend_array_list):
-                z_diff = average_mid_z - mid_z_list[k]
-                global_array = d_array + z_diff
-                raster.burn(global_array, k+1, trans_list[k])
+                if see_level:
+                    z_diff = average_mid_z - mid_z_list[k]
+                    global_array = d_array + z_diff - min(lowest_pixel_list) # shift global detrended raster to see level
+                    raster.burn(global_array, k + 1, trans_list[k])
+                else:
+                    z_diff = average_mid_z - mid_z_list[k]
+                    global_array = d_array + z_diff
+                    raster.burn(global_array, k+1, trans_list[k])
 
     # Plot the elements below marked as True in config.py
     plotter(thal_df, plane_df, raster_coord_df, thalweg_new_z_vector, raster.name, thal_points.name)

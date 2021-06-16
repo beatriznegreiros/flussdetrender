@@ -45,6 +45,10 @@ detrend_local = False
 detrend_array_list = []
 mid_z_list = []
 trans_list = []
+lowest_pixel_list = []
+
+# Shift the lowest point of all dentrended DEMs to see level (True to shift)
+see_level = True
 
 # Set True to show the plots of the respective elements.
 # plot_detrender = True
