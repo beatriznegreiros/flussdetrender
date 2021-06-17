@@ -126,14 +126,20 @@ def detrender(raster_add, shapefile_add, last_item):
         mid_z_list.append(mid_z)
         detrend_array_list.append(detrended_array)
         trans_list.append(raster.transform)
-        lowest_pixel_list.append(np.nanmin(detrended_array))
+        detrender_global_array_list = []
         if last_item:
             average_mid_z = np.average(mid_z_list)
             for k, d_array in enumerate(detrend_array_list):
                 if see_level:
                     z_diff = average_mid_z - mid_z_list[k]
-                    global_array = d_array + z_diff - min(lowest_pixel_list) # shift global detrended raster to see level
-                    raster.burn(global_array, k + 1, trans_list[k])
+                    global_array = d_array + z_diff
+                    lowest_pixel_list.append(np.nanmin(global_array))
+                    detrender_global_array_list.append(global_array)
+                    if k + 1 == detrend_array_list.__len__():
+                        lowest_pixel = min(lowest_pixel_list)
+                        for j, glo_array in enumerate(detrender_global_array_list):
+                            glo_array -= lowest_pixel
+                            raster.burn(glo_array, j + 1, trans_list[j])
                 else:
                     z_diff = average_mid_z - mid_z_list[k]
                     global_array = d_array + z_diff
