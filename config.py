@@ -17,7 +17,10 @@ try:
     import sys
     from time import perf_counter
     from pathlib import Path
+    import scipy.interpolate as scint
 
+    import shapely.geometry
+    import math
 except ImportError:
     print("One of the python packages could not be opened")
 

@@ -133,3 +133,5 @@ class Thalweg(Shape):
             logging.warning("Detrended dem {} may not be sufficiently flat".format(raster_object.name))
         else:
             print("Dem {} was detrended successfully".format(raster_object.name))
+
+
